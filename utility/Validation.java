@@ -47,5 +47,4 @@ public class Validation {
 		Matcher matcher = p.matcher(password);
 		return matcher.matches();
 	}
-
 }
