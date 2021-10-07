@@ -2,7 +2,6 @@ package serviceimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import model.Address;
@@ -11,11 +10,10 @@ import utility.UtilityScanner;
 import utility.Validation;
 
 public class AddressBookServices {
-
-	private List<Person> personList = new ArrayList<>();
+	
 	Validation validate = Validation.getInstance();
 
-	Map<String,List<Person>> addressBookList = new HashMap<>();
+	Map<String,List<Person>> addressBooksMap = new HashMap<>();
 
 	public Person addPerson(){
 		Person person = new Person();
@@ -63,31 +61,40 @@ public class AddressBookServices {
 		return person;
 	}
 
-	public void addToBook(Person person) {
-		personList.add(person);
+	public void addToBook(Person person,String addressBookName) {
+		List<Person> persons = addressBooksMap.get(addressBookName);
+		if(persons != null) {
+			persons.add(person);
+		}else {
+			addListToMap(addressBookName);
+			List<Person> persons1 = addressBooksMap.get(addressBookName);
+			persons1.add(person);
+
+		}
 	}
 	
-	public void addListToMap(List<Person> person,String key) {
-		addressBookList.put(key, person);
-		person.clear();
-		
+	public void addListToMap(String key) {
+		addressBooksMap.put(key, new ArrayList<Person>());
 	}
-
+	
 	public void displayAddressBook() {
-		if(personList.isEmpty()) {
+		if(addressBooksMap.isEmpty()) {
 			System.out.println("AddressBook is empty");
 		}else {
-			personList.forEach(p->{
-				System.out.println(p);
-			}); 
-		}
+			for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet())
+	            System.out.println("Key = " + entry.getKey() +
+	                             ", Value = " + entry.getValue());
+	    }
 
 	}
 
 	public Person getPerson(String name) {
-		for(Person person: personList) {
-			if(person.getFname().equalsIgnoreCase(name)) {
-				return person;
+		for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet()) {
+			List<Person> personList = entry.getValue();
+			for(Person person: personList) {
+				if(person.getFname().equals(name)) {
+					return person;
+				}
 			}
 		}
 		return null;
@@ -108,27 +115,45 @@ public class AddressBookServices {
 	}
 
 	public void deleteContact(Person person) {
-		personList.remove(person);
+		for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet()) {
+			List<Person> personList = entry.getValue();
+			if(personList.contains(person)) {
+				personList.remove(person);
+				return;
+			}
+		}
+		System.out.println("Person not Exists.");
 	}
 
 	public int contactListFromCity(String cityName) {
 		int count = 0;
-		for(Person person: personList) {
-			if(person.getAddress().getCity().equalsIgnoreCase(cityName)) {
-				count++;
-				System.out.println(person);
+		for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet()) {
+			List<Person> personList = entry.getValue();
+			for(Person person: personList) {
+				Address address = person.getAddress();
+				if(address.getCity().equals(cityName)) {
+					count++;
+				}
 			}
 		}
 		return count;	
 	}
 	public int contactListFromState(String stateName) {
 		int count = 0;
-		for(Person person: personList) {
-			if(person.getAddress().getState().equalsIgnoreCase(stateName)) {
-				System.out.println(person);
-				count++;
+		for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet()) {
+			List<Person> personList = entry.getValue();
+			for(Person person: personList) {
+				Address address = person.getAddress();
+				if(address.getState().equals(stateName)) {
+					count++;
+				}
 			}
-		}	
+		}
 		return count;
 	}
+
+	public void showAllAddressBookNames() {	
+		for (Map.Entry<String,List<Person>> entry : addressBooksMap.entrySet())
+            System.out.print(entry.getKey()+" ");
+    }
 }

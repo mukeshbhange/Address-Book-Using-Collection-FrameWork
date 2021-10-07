@@ -9,18 +9,22 @@ public class AdressBook {
 	public static void main(String[] args) {
 
 		AddressBookServices service = new AddressBookServices();
+		System.out.println("!!!!.....Welcome to AddressBook....!!!!");
 
 		boolean flag = true;
 		while(flag) {
-			System.out.println("!!!!.....Welcome to AddressBook....!!!!");
 			System.out.println("1.Add \n2.Edit Contact Info \n3.display \n4.Delete\n5.Contacts By city"
 					+ "\n6.Conatcts by state\n7. Exit");
-			//+"8.Create New Adress Book\n9.display All Address Books");
 			int choice = UtilityScanner.getInt("Make your choice");
 			switch(choice) {
 			case 1:
 				Person person=service.addPerson();
-				service.addToBook(person);
+				System.out.println("Already Present Address Books");
+				service.showAllAddressBookNames();
+				System.out.println();
+				String addBook = UtilityScanner.getString("which address book to add");
+				service.addToBook(person,addBook);
+				System.out.println("Added to "+addBook+" AddressBook");
 				break;
 			case 2:
 				String fNmae = UtilityScanner.getString("FirstName");
@@ -59,14 +63,6 @@ public class AdressBook {
 			case 7:
 				System.out.println("You are exiting......");
 				flag = false;
-				break;
-			case 8:
-				String newBook = UtilityScanner.getString("Name for new Address Book");
-				Person person1 = service.addPerson();
-				service.addListToMap(newBook);
-				break;
-			case 9:
-				service.displayAllAddressBooks();
 				break;
 			default:
 				System.out.println("enter correct choice.");
